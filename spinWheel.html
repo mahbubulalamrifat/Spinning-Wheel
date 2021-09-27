@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Spinning Wheel</title>
+		<script type="text/javascript" src="Winwheel.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+		/>
+	</head>
+	<body>
+		<div align="center">
+			<div class="power_controls">
+				<table class="power" cellpadding="10" cellspacing="0" hidden>
+					<tr>
+						<td width="78" align="center" id="pw3" onClick="powerSelected(3);">
+							High
+						</td>
+					</tr>
+					<tr>
+						<td align="center" id="pw2" onClick="powerSelected(2);">Med</td>
+					</tr>
+					<tr>
+						<td align="center" id="pw1" onClick="powerSelected(1);">Low</td>
+					</tr>
+				</table>
+				<button
+					id="spin_button"
+					onClick="startSpin();"
+					style="
+						background-color: darkcyan;
+						border: none;
+						outline: none;
+						color: white;
+						padding: 10px 30px 10px 30px;
+						font-size: 18px;
+						border-radius: 5px;
+						cursor: pointer;
+					"
+				>
+					Start
+				</button>
+
+				<br /><br />
+				&nbsp;&nbsp;<a href="#" onClick="resetWheel(); return false;"
+					>Play Again</a
+				><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(reset) <br /><i
+					class="fa fa-arrow-down fa-2x"
+					aria-hidden="true"
+				></i>
+			</div>
+
+			<canvas id="canvas" width="434" height="434">
+				<p style="color: white" align="center"></p>
+			</canvas>
+		</div>
+		<script>
+			let theWheel = new Winwheel({
+				numSegments: 8,
+				outerRadius: 212,
+				textFontSize: 28,
+				segments: [
+					{ fillStyle: "#eae56f", text: "Prize 1" },
+					{ fillStyle: "#89f26e", text: "Prize 2" },
+					{ fillStyle: "#7de6ef", text: "Prize 3" },
+					{ fillStyle: "#e7706f", text: "Prize 4" },
+					{ fillStyle: "#eae56f", text: "Prize 5" },
+					{ fillStyle: "#89f26e", text: "Prize 6" },
+					{ fillStyle: "#7de6ef", text: "Prize 7" },
+					{ fillStyle: "#e7706f", text: "Prize 8" },
+				],
+				animation: {
+					type: "spinToStop",
+					duration: 5,
+					spins: 8,
+					callbackFinished: alertPrize,
+				},
+			});
+
+			let wheelPower = 0;
+			let wheelSpinning = false;
+
+			function powerSelected(powerLevel) {
+				if (wheelSpinning == false) {
+					document.getElementById("pw1").className = "";
+					document.getElementById("pw2").className = "";
+					document.getElementById("pw3").className = "";
+
+					if (powerLevel >= 1) {
+						document.getElementById("pw1").className = "pw1";
+					}
+
+					if (powerLevel >= 2) {
+						document.getElementById("pw2").className = "pw2";
+					}
+
+					if (powerLevel >= 3) {
+						document.getElementById("pw3").className = "pw3";
+					}
+
+					wheelPower = powerLevel;
+
+					document.getElementById("spin_button").src = "spin_on.png";
+					document.getElementById("spin_button").className = "clickable";
+				}
+			}
+
+			function startSpin() {
+				if (wheelSpinning == false) {
+					if (wheelPower == 1) {
+						theWheel.animation.spins = 3;
+					} else if (wheelPower == 2) {
+						theWheel.animation.spins = 8;
+					} else if (wheelPower == 3) {
+						theWheel.animation.spins = 15;
+					}
+
+					document.getElementById("spin_button").src = "spin_off.png";
+					document.getElementById("spin_button").className = "";
+
+					theWheel.startAnimation();
+
+					wheelSpinning = true;
+				}
+			}
+
+			function resetWheel() {
+				theWheel.stopAnimation(false);
+				theWheel.rotationAngle = 0;
+				theWheel.draw();
+
+				document.getElementById("pw1").className = "";
+				document.getElementById("pw2").className = "";
+				document.getElementById("pw3").className = "";
+
+				wheelSpinning = false;
+			}
+
+			function alertPrize(indicatedSegment) {
+				alert("You have won " + indicatedSegment.text);
+			}
+		</script>
+	</body>
+</html>
